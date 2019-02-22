@@ -1,0 +1,26 @@
+#ifndef _TEST_H
+#define _TEST_H
+#define _FUNC_NAME(a, b) a##b
+#define FUNC_NAME(a, b) _FUNC_NAME(a, b)
+#define TEST(a, b) \
+__attribute__((constructer) void FUNC_NAME(test, __COUNTER__)() 
+#endif
+
+
+以上为头文件，用宏替换包含宏替换，用以产生递进分层。
+
+
+TEST(a, b) {
+    printf("\n");
+}
+
+TEST(b, c) {
+    printf("\n");
+}
+
+int main() {
+
+    return 0;
+}
+
+不用调用，直接输出

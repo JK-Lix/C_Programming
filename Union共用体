@@ -1,0 +1,67 @@
+共用体在涉及到直接操作内存的嵌入式编程、需要季度节省空间的通信协议设计中都会有他的优势。
+
+通过公用题可以实现整体修改和按字节修改的类型：
+如果我们用这个union register类型声明一个变量reg，
+我们将可以通过reg.bytes按字节访问
+或者通过reg.number整体访问两种不同的方式获得或修改同一片内存。
+union register {
+    struct {
+        unsigned char b1;
+        unsigned char b2;
+        unsigned char b3;
+        unsigned char b4;
+        unsigned char reserved;
+    } bits;
+    unsigned char byte;
+}
+
+也可以定义一个既可以按位访问，也可以按字节访问的类型：
+union {
+    struct {
+        unsigned char b1:1;
+        unsigned char b2:1;
+        unsigned char b3:1;
+        unsigned char b4:1;
+        unsigned char reserved:4;
+    } bits;
+    unsigned char byte;
+}
+冒号是用来定义变量使用内存的“位长”，后面的数字表示要占用的二进制位数；如此可以不用按照char类型默认的字节数占用内存，即可按字节或者按位进行访问和使用（后面的:1也称作位域）
+
+
+
+
+例：用于存储IP地址（IPv4和IPv6）：
+union {
+    // IPv4 地址
+    union {
+        struct {
+            unsigned char _reserved[12];
+            unsigned char _ip_bytes[4];
+        } _raw;
+        struct {
+            unsigned char _reserved[12];
+            unsigned char _o1;
+            unsigned char _o2;
+            unsigned char _o3;
+            unsigned char _o4;    
+        } _octet;    
+    } _IPv4;
+
+    // IPv6 地址
+    union {
+        struct {
+            unsigned char _IpBytes[16];
+        } _raw;
+        struct {
+            unsigned short _w1;
+            unsigned short _w2;
+            unsigned short _w3;
+            unsigned short _w4;
+            unsigned short _w5;
+            unsigned short _w6;
+            unsigned short _w7;
+            unsigned short _w8;   
+        } _word;
+    } _IPv6;
+} _IP;
